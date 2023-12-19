@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+opencv-python
+scikit-learn
+matplotlib
+tensorflow
