@@ -34,7 +34,6 @@ app = Flask(__name__)
 def upload_media():
 
     method = "manual"
-
     
     if request.args.get('method') is not None:
         method = request.args.get('method')
@@ -47,6 +46,7 @@ def upload_media():
     image = request.files['image'].stream
     img = cv2.imdecode((np.fromstring(image.read(), np.uint8)), cv2.IMREAD_COLOR)
     # print(f"isi file:{img}")
+
 
     # Cek apakah file kosong
     if file.filename == '':
@@ -61,6 +61,8 @@ def upload_media():
 
     image = img
 
+    crop =[]
+    sorted_contours_lines = None
 #region lokalisasi
     
 
@@ -82,29 +84,28 @@ def upload_media():
         # black otside
         black_outside = make_outside_black(image,largest_contour)
     
-        # # Straightened
-        # ktp_width, ktp_height = 856, 540
-    
-        # crop = get_transformed_image(black_outside,contours)
+        # Straightened
+        ktp_width, ktp_height = 856, 540
+
+        crop = get_transformed_image(black_outside,contours)
     
         # crop = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-        cv2.imshow("",black_outside)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
+        # cv2.imshow("",crop)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
     
-        # h, w, c = crop.shape
+        h, w, c = crop.shape
         
-        # if w > 1000:
+        if w > 1000:
         
-        #     new_w = 1000
-        #     ar = w/h
-        #     new_h = int(new_w/ar)
+            new_w = 1000
+            ar = w/h
+            new_h = int(new_w/ar)
         
-        #     crop = cv2.resize(crop, (new_w, new_h), interpolation = cv2.INTER_AREA)
+            crop = cv2.resize(crop, (new_w, new_h), interpolation = cv2.INTER_AREA)
     
-        # clustered_image = cluster_image(crop)
-        # clustered_image = clustered_image.astype(np.uint8)
+        clustered_image = cluster_image(crop)
+        clustered_image = clustered_image.astype(np.uint8)
         
         gray = cv2.cvtColor(clustered_image, cv2.COLOR_BGR2GRAY)
         
@@ -121,10 +122,10 @@ def upload_media():
         sorted_contours_lines = sorted(contours, key = lambda ctr : cv2.boundingRect(ctr)[1]) # (x, y, w, h)
     
         # get text locations in contours
-        img2 = get_sorted_contours_lines(sorted_contours_lines, black_outside)
+        img2 = get_sorted_contours_lines(sorted_contours_lines, crop)
     
             # List untuk menyimpan hasil crop
-        crop_results = save_contoured_area(black_outside,sorted_contours_lines)
+        crop_results = save_contoured_area(crop,sorted_contours_lines)
 
     except Exception as e:
     # Handle other types of exceptions
@@ -142,7 +143,7 @@ def upload_media():
         
         # Variabel untuk menyimpan hasil deteksi karakter
         detected_words = []
-        
+
         # Loop untuk menampilkan setiap hasil crop satu per satu
         for ctr in sorted_contours_lines:
             x, y, w, h = cv2.boundingRect(ctr)
@@ -247,7 +248,7 @@ def upload_media():
     
     # Variabel untuk menyimpan hasil deteksi karakter
         detected_words = []
-    
+
         # Loop untuk menampilkan setiap hasil crop satu per satu
         for ctr in sorted_contours_lines:
             x, y, w, h = cv2.boundingRect(ctr)

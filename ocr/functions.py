@@ -99,7 +99,7 @@ def get_transformed_image(black_outside,contours):
         mirrored_image = cv2.flip(rotated_image, 1)
         crop = mirrored_image
 
-    print(f"get_transformed_image returning {crop}")
+    # print(f"get_transformed_image returning {crop}")
     return crop
 
 def get_inverted_image(gray):
@@ -149,17 +149,16 @@ def normalization(image):
     pass
 
 
-def crop_and_process(contour, crop_results):
-    x, y, w, h = cv2.boundingRect(contour)
+# def crop_and_process(contour, crop_results):
+#     x, y, w, h = cv2.boundingRect(contour)
 
-    if (10 <= w <= 1000) and (20 <= h <= 50):
-        cropped_img = crop[y:y+h, x:x+w]
-        gray_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY)
-        _, otsu = cv2.threshold(gray_img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        invertion = 255 - otsu
-        crop_results.append(invertion)
-        cv2_imshow(invertion)
-        segment_letters(invertion)
+#     if (10 <= w <= 1000) and (20 <= h <= 50):
+#         cropped_img = crop[y:y+h, x:x+w]
+#         gray_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY)
+#         _, otsu = cv2.threshold(gray_img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+#         invertion = 255 - otsu
+#         crop_results.append(invertion)
+#         segment_letters(invertion)
 
 def segment_letters(image):
     contours_letter, _ = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
